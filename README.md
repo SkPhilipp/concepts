@@ -1,11 +1,46 @@
 # Concepts
 
-Here's a list of ideas I would like to see realized, but haven't had the time to implement myself.
+This repository contains a list of ideas I would like to see realized, but haven't had the time to implement myself.
 
-## Automatic Patchers
+### Conflict Warning
 
-Tools like Renovate allow for automated Pull Requests to be created to bump dependencies. This is a step forward from doing it manually, but I would
-like even less manual labor. Some concepts similar to this;
+An IDE integration which warns through a visual indicator when you're modifying a file that that file's changes are likely to cause a conflict. Not only
+with the base branch but especially with other branches that are in active development.
+
+### Plain Docker over Earthly
+
+Earthly is a tool with a syntax similar to Dockerfiles. Its capabilities of caching and parallelization are implemented in Docker through multi-stage
+Dockerfiles.
+
+A reference implementation of this exists for release-engineers/y at https://github.com/release-engineers/y/blob/feat/multi-stage/Dockerfile.
+
+### Pull-based Content
+
+A common practice for repositories is a push-based approach where the repository owner decides when a release is created. This requires a repository owner to
+perform manual labor to either manually perform this or to automate this process.
+
+An alternative approach would be pull-based; where a repository consumer can choose a construct a release from any point in the project's history.
+Following a standardized layout, tooling could be built around this to make it easier to consume.
+
+| Artifacts    | Content Source              ||--------------|-----------------------------|| Packages     | Dockerfile target           || Docker Image | Dockerfile target (default) || Change log   | Git Metadata                || Releases     | Git Metadata                |### Git Repository Management Interface
+
+A library to more easily work with GitHub repositories and Git. This should be able to easily parse and construct GitHub URLs in various formats. Moreover, it
+should be able to perform local Git operations as well as operations using the remote repository management system.
+
+For example:
+- Parsing from a GitHub organization and repository name combination.
+- Creating a new branch locally.
+- Creating a new branch on the remote repository without owning a copy of the repository locally.
+
+### Bulk Patching
+
+A tool to apply a patch to multiple repositories within an organization, in an easily repeatable and idempotent manner.
+
+Preferably with a user interface where users can apply patches to their own repositories either directly or through a pull request.
+
+### Git Development to Master
+
+A workflow which automatically pushes changes that have passed CI to the master branch. This would keep that branch entirely green.
 
 ### Markdown Links
 
@@ -40,7 +75,8 @@ As such, I would like a tool which can;
 I like consistency across the board, and you the reader probably do too; For example, when you're working with a GitHub Action using semantic
 versioning as its tagging scheme, you'd expect that when the latest version (`v1.2.3`) gets released, that the floating tag `v1` points to it.
 Developers usually have implicit assumptions about how Git tags are used, especially for projects claiming to use semantic versioning. When these
-assumptions are broken it can lead to confusing issues. I've listed some of my assumptions;
+assumptions are broken it can lead to confusing issues but more importantly when these implicit rules are followed you can then build powerful
+automation on top of it. I've listed some of my assumptions;
 
 - the latest of `(major).(minor).(patch)` exists as `(major).(minor)` for each major & minor version.
 - the latest of `(major).(minor)` exists as `(major)` for each major version.
@@ -53,9 +89,9 @@ assumptions are broken it can lead to confusing issues. I've listed some of my a
 When fully automated, those rules _usually_ tend to be true. What I'd like to see is a tool which can check for repositories and tags that violate
 these rules, and then either fix the tags or let the maintainers know.
 
-## Utilities
+### GitHub Release Policy
 
-Software you'd want to use in your CI/CD flows, your favorite CLI, or as a library for your own tools.
+Same as above, but for GitHub Releases.
 
 ### 'action-push-or-pull'
 
@@ -136,3 +172,25 @@ it's more time efficient and more realistic to test workflows manually. I'd like
 - Merge it into your favorite dummy repository that most closely resembles real repositories.
 - Run the workflow with actual GitHub events (i.e. make a real pull-request when that's the workflow trigger).
 - Verify the workflow did what it was supposed to do.
+
+### Minimal Library for Timed Events
+
+I've seen many implementations of over-time events, but they're usually implemented in a manner that is not very flexible, not performant and not possible
+to share over a network.
+
+Although more related to a previous endeavour, EffortGames, I'd still like to see a library which can;
+
+- Queue an event of a given type at a given time.
+- Move an already queued event forward in time.
+- Move an already queued event backward in time.
+- Retrieve events of a given type at the current time.
+- Retrieve events of a given type at the current and all future times.
+- Tick forward by one time increment.
+- Tick forward to a time increment.
+
+Which should contain reference implementations for;
+
+- Changes in a value over time.
+- Toggles of values over time.
+
+And how to serialize and deserialize these queued changes.
